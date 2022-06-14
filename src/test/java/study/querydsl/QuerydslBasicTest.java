@@ -643,4 +643,36 @@ public class QuerydslBasicTest {
         return usernameEq(usernameCond).and(ageEq(ageCond));
     }
 
+    @Test
+    public void bulkUpdate() {
+        // member1 = 10 -> 비회원
+        // member2 = 20 -> 비회원
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(20))
+                .execute();
+
+        /* 벌크 연산 후에 엔티티를 조회할 경우 영속성 컨텍스트와 DB데이터간 달라서 항상 초기화 해야함
+        em.flush();
+        em.clear();
+        */
+    }
+
+    @Test
+    public void bulkAdd() {
+        queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1)) // 마이너스일 경우는 -1 처럼 음수 자체를 넣으면 됨
+                .execute();
+    }
+
+    @Test
+    public void bulkDelete() {
+        queryFactory
+                .delete(member)
+                .where(member.age.lt(18))
+                .execute();
+    }
+
 }
